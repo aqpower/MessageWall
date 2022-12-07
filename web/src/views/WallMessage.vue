@@ -20,7 +20,7 @@
       <span class="iconfont icon-tianjia"></span>
     </div>
     <hh-modal-vue :title="title" @close="closeModal" :isModal="modal">
-      <new-card-vue :id="id" @addClose="closeModal" v-if="cardSelected == -1"></new-card-vue>
+      <new-card-vue :id="id" @addClose="closeModal" v-if="cardSelected == -1" @clickbt="newCard"></new-card-vue>
       <card-detail-vue v-if="cardSelected != -1" :card="cards[cardSelected]"></card-detail-vue>
     </hh-modal-vue>
     <hh-viewer-vue :isView="view" :photos="photoArr" :nowNumber="cardSelected" @viewSwitch="viewSwitch()">
@@ -144,6 +144,9 @@ export default {
       } else {
         this.cardSelected++;
       }
+    },
+    newCard(e){
+      console.log(e);
     }
   },
   watch: {

@@ -58,6 +58,7 @@
 import { cardColor, cardColor1, label } from "@/utils/data";
 import HhButtonVue from "./HhButton.vue";
 import { getObjectURL } from '@/utils/hhsg';
+import { insertWallApi } from "@/api/index";
 export default {
   data() {
     return {
@@ -136,6 +137,15 @@ export default {
         imgurl: '',
       }
       console.log(data);
+      if (this.message && this.id == 0) {
+        data.color = this.colorSelected;
+        insertWallApi(data).then(() => {
+          this.message = ' ';
+          this.$emit("clickbt", data);
+          this.$message({ type: "success", message: "感谢你的记录！" })
+        })
+      }
+
     }
   },
   components: {
