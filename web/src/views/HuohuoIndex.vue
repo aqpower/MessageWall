@@ -1,7 +1,7 @@
 <template>
   <div class="wall-index">
     <top-bar></top-bar>
-    <video src="@/assets/images/qm1.mp4" autoplay="autoplay" muted="nuted" loop="loop" class="bg-video" ></video>
+    <video src="@/assets/images/qm1.mp4" autoplay="autoplay" muted="nuted" loop="loop" class="bg-video"></video>
     <router-view></router-view>
     <foot-bar-vue></foot-bar-vue>
   </div>
@@ -10,6 +10,9 @@
 <script>
 import topBar from '@/components/TopBar.vue'
 import FootBarVue from '@/components/FootBar.vue'
+
+import { signInApi } from '@/api/index'
+
 export default {
   data() {
     return {
@@ -26,10 +29,20 @@ export default {
 
   },
   created() {
-
+    this.getUser();
   },
   methods: {
-
+    // 获取ip地址，前端难,去node后端
+    // 前后端再次串起来了!
+    getUser() {
+      signInApi().then((res) => {
+        console.log(res);
+        let user = {
+          id: res.ip,
+        }
+        this.$store.commit('getUser', user)
+      })
+    }
   }
 }
 </script>

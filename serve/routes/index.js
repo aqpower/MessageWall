@@ -32,6 +32,7 @@ module.exports = function (app) {
     app.post('/deletefeedback', (req, res) => {
         controller.deleteFeedback(req, res)
     })
+
     //分页查询wall并获取赞、举报数据
     app.post('/findwallpage', (req, res) => {
         controller.findWallPage(req, res)
@@ -39,5 +40,15 @@ module.exports = function (app) {
 
     app.post('/findcommentpage', (req, res) => {
         controller.findCommentPage(req, res)
+    })
+
+
+    //用户进入进行ip登记
+    app.post('/signip', (req, res) => {
+        var ip = req.ip;
+        res.send({
+            code: 200,
+            ip: ip,
+        })
     })
 }

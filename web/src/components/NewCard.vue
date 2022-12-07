@@ -1,10 +1,24 @@
 <template>
   <div class="new-card">
-    <div class="colors">
+    <div class="colors" v-if="(id == 0)">
       <p class="color-li" v-for="(e, index) in cardColor1" :key="index" :style="{ background: e }"
         :class="{ colorselected: index == colorSelected }" @click="changeColor(index)"></p>
     </div>
-    <div class=" card-main" :style="{ background: cardColor[colorSelected] }">
+    <!-- 照片 -->
+    <div class="add-photo" v-if="(id == 1)">
+      <input type="file" name="file" id="file" multiple="multiple" @change="showPhoto" />
+      <!-- 伪按钮 -->
+      <div class="add-bt" v-if="url == ' '">
+        <span class="iconfont icon-tianjia"></span>
+      </div>
+      <div class="change-bt" v-if="url != ' '">
+        <span class="iconfont icon-xiugai"></span>
+      </div>
+      <div class="photo-div">
+        <img :src="url" />
+      </div>
+    </div>
+    <div class=" card-main" :style="{ background: id == 0 ? cardColor[colorSelected] : cardColor[5] }">
       <textarea placeholder="留言..." class="message" maxlength="96" v-model="message"></textarea>
       <input type="text" placeholder="签名" class="name" v-model="name" />
     </div>
@@ -35,14 +49,15 @@
     </div>
     <div class="footbt">
       <hh-button-vue size="max" nom="secondary" @click="closeModal(0)">丢弃</hh-button-vue>
-      <hh-button-vue size="max" class="submit" @click="apiTest()">确定</hh-button-vue>
+      <hh-button-vue size="max" class="submit" @click="submit()">确定</hh-button-vue>
     </div>
   </div>
 </template>
 
 <script>
-import { cardColor, cardColor1, label } from "@/utils/data"
+import { cardColor, cardColor1, label } from "@/utils/data";
 import HhButtonVue from "./HhButton.vue";
+import { getObjectURL } from '@/utils/hhsg';
 export default {
   data() {
     return {
@@ -53,6 +68,8 @@ export default {
       label,
       message: '',      // 留言信息
       name: '',         // 签名
+      user: this.$store.state.user,
+      url: ' ',
     }
   },
   props: {
@@ -76,6 +93,13 @@ export default {
       this.$emit('addClose', data);
     },
 
+    //图片显示
+    showPhoto() {
+      let aa = getObjectURL(document.getElementById("file").files[0]);
+      this.url = aa;
+    },
+
+    // 接口测试
     apiTest() {
       let data = {
         type: 0,
@@ -93,6 +117,25 @@ export default {
           console.log(res)
           console.log('111')
         })
+    },
+
+    //提交新建wall，拦截message就可以
+    submit() {
+      let name = '匿名';
+      if (this.name) {
+        name = this.name;
+      }
+      let data = {
+        type: this.id,
+        message: this.message,
+        name: name,
+        userId: this.user.id,
+        moment: new Date(),
+        label: this.labelSelected,
+        color: 5,
+        imgurl: '',
+      }
+      console.log(data);
     }
   },
   components: {
@@ -119,6 +162,66 @@ export default {
 
     .colorselected {
       border: 1px solid @primary-color;
+    }
+  }
+
+  .add-photo {
+    padding-bottom: 20px;
+    position: relative;
+
+    #file {
+      position: absolute;
+      z-index: 10;
+      top: -10px;
+      height: 74px;
+      width: 64px;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .add-bt {
+      width: 64px;
+      height: 64px;
+      border: 2px solid @gray-3;
+      border-radius: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+
+      .icon-tianjia {
+        font-size: 24px;
+      }
+    }
+
+    .photo-div {
+      max-height: 200px;
+      width: 100%;
+      background: #fff;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+
+      img {
+        width: 100%;
+      }
+    }
+
+    .change-bt {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .icon-xiugai {
+        color: #fff;
+      }
     }
   }
 
