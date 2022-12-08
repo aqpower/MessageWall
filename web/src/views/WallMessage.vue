@@ -16,6 +16,19 @@
       <photo-card-vue class="photo-card" :photo="e" v-for="(e, index) in photo" :key="index" @click="selectCard(index)">
       </photo-card-vue>
     </div>
+
+    <!-- 卡片状态 -->
+    <div class="none-msg" v-if="(isOk == 0)">
+      <p>{{ none[id].message }}</p>
+    </div>
+    <!-- lottie动画 -->
+    <div class="loading" v-show="(isOk == -1)">
+      <div id=lottie></div>
+      <p>加载中...</p>
+    </div>
+
+    <p class="bottom-tip" v-show="(isOk == 2)">没有更多...</p>
+
     <div class="add" :style="{ bottom: addBottom + 'px' }" @click="addCard" v-show="!modal">
       <span class="iconfont icon-tianjia"></span>
     </div>
@@ -29,23 +42,26 @@
 </template>
 
 <script>
-import { wallType, label } from '../utils/data'
+import { wallType, label, none } from '../utils/data'
 import NodeCardVue from '@/components/NoteCard.vue'
 import HhModalVue from '@/components/HhModal.vue'
 import NewCardVue from '@/components/NewCard.vue'
 import CardDetailVue from '@/components/CardDetail.vue'
 import PhotoCardVue from '@/components/PhotoCard.vue'
 import HhViewerVue from '@/components/HhViewer.vue'
-import { note, photo } from '../../mock/index'
+import { photo } from '../../mock/index'
+import lottie from 'lottie-web'
+import loading from '@/assets/images/loading.json'
 export default {
   data() {
     return {
       wallType,
       label,
+      none,
       // id: 0,//留言墙与照片墙的切换id
       nlabel: -1, //当前对应的标签
+      note: '',
       photo: photo.data,
-      note: note.data,
       photoArr: [],//图片列表
       nWidth: 0,//卡片模块宽度
       addBottom: 30,//add按钮距离底部高度
@@ -53,6 +69,7 @@ export default {
       modal: false,//是否调用弹窗
       view: false,//预览大图
       cardSelected: -1, //当前选择卡片
+      isOk: -1,// 是否加载中 -1加载状态
     }
   },
   components: {
@@ -70,7 +87,7 @@ export default {
     cards() {
       let a = '';
       if (this.$route.query.id == 0) {
-        a = note.data;
+        a = this.note;
       } else if (this.$route.query.id == 1) {
         a = photo.data;
       }
@@ -145,9 +162,25 @@ export default {
         this.cardSelected++;
       }
     },
-    newCard(e){
+    // 前端插入卡片
+    newCard(e) {
       console.log(e);
-    }
+    },
+    // lottie加载动画
+    loading() {
+      if (this.isOk == -1) {
+        this.$nextTick(async () => {
+          var params1 = {
+            container: document.getElementById("lottie"),
+            renderer: "svg",
+            loop: true,
+            autoplay: true,
+            animationData: loading,
+          };
+          lottie.loadAnimation(params1);
+        })
+      }
+    },
   },
   watch: {
     id() {
@@ -160,6 +193,7 @@ export default {
   mounted() {
     this.noteWidth();
     this.getPhoto();
+    this.loading();
     //监听屏幕宽度变化
     window.addEventListener('resize', this.noteWidth);
     //监听高度变化
@@ -239,6 +273,46 @@ export default {
       margin-bottom: @padding-4;
       break-inside: avoid;
     }
+  }
+
+  .none-msg {
+    width: 100%;
+    text-align: center;
+    // padding-top: 80px;
+    position: absolute;
+    top: 320px;
+
+    img {
+      display: inline;
+    }
+
+    p {
+      font-family: fa;
+      // font-weight: 600;
+      font-size: 19px;
+      color: @gray-3;
+    }
+  }
+
+  .loading {
+    text-align: center;
+    width: 100%;
+
+    #lottie {
+      height: 200px;
+    }
+
+    p {
+      font-family: fa;
+      font-size: 19px;
+      color: @gray-3;
+    }
+  }
+
+  .bottom-tip {
+    text-align: center;
+    color: @gray-3;
+    padding: 20px;
   }
 
   .add {
