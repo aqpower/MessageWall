@@ -12,7 +12,7 @@
         <hh-button-vue>评论</hh-button-vue>
       </div>
     </div>
-    <p class="title">评论{{ card.comment }}</p>
+    <p class="title">评论{{ card.comcount[0].count }}</p>
     <div class="comment">
       <div class="comment-li" v-for="(e,index) in comment" :key="index">
         <div class="user-head" :style="{backgroundImage:portrait[e.imgurl]}"></div>

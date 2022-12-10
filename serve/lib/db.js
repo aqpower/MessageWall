@@ -83,7 +83,7 @@ let feedbacks = `
     );`
 
 
-    //留言评论
+//留言评论
 let comments = `
         create table if not exists comments(
         id INT NOT NULL AUTO_INCREMENT,
@@ -96,12 +96,12 @@ let comments = `
         PRIMARY KEY ( id )
     );`
 
-let createTabel = (sql)=>{
-    return query(sql,[])
+let createTabel = (sql) => {
+    return query(sql, [])
 }
 
 //先创建数据库再创建表
-async function create(){
+async function create() {
     await createDatabase(WALLTS);
     createTabel(walls);
     createTabel(feedbacks);
@@ -113,19 +113,19 @@ create();
 // 新建walls
 exports.insertWall = (value) => {
     let _sql = `insert into walls set type=?,message=?,name=?,userId=?,moment=?,label=?,color=?,imgurl=?;`
-    return query(_sql,value);
+    return query(_sql, value);
 }
 
 // 新建反馈
 exports.insertFeedback = (value) => {
     let _sql = `insert into feedbacks set wallId=?,userId=?,type=?,moment=?;`
-    return query(_sql,value);
+    return query(_sql, value);
 }
 
 // 新建评论
 exports.insertComment = (value) => {
     let _sql = `insert into comments set wallId=?,userId=?,imgurl=?,moment=?,comment=?,name=?;`
-    return query(_sql,value);
+    return query(_sql, value);
 }
 
 //删除墙时，主表对应多条子表一起删除
@@ -145,9 +145,9 @@ exports.deleteComment = (id) => {
 }
 
 // 分页查询墙
-exports.findWallPage = (page,pagesize,type,label) => {
+exports.findWallPage = (page, pagesize, type, label) => {
     let _sql;
-    if(label == -1){
+    if (label == -1) {
         _sql = `select * from walls where type="${type}" order by id desc limit ${(page - 1) * pagesize},${pagesize};`
     } else {
         _sql = `select * from walls where type="${type}" and label="${label}" order by id desc limit ${(page - 1) * pagesize},${pagesize};`
@@ -156,26 +156,28 @@ exports.findWallPage = (page,pagesize,type,label) => {
 }
 
 //倒叙分页评论查询
-exports.findCommentPage = (page,pagesize,id) => {
+exports.findCommentPage = (page, pagesize, id) => {
     let _sql = `select * from comments where wallId = "${id}" order by id desc limit ${(page - 1) * pagesize};`
     return query(_sql)
 }
 
 //查询反馈总数据
-exports.feedbackCount = (wid,type) => {
-    let _sql = `select count(*) as conut from feedbacks where wallId="${wid}" and type="${type}";`
+exports.feedbackCount = (wid, type) => {
+    let _sql = `select count(*) as count from feedbacks where wallId="${wid}" and type="${type}";`
     return query(_sql)
 }
 
 //查询评论总数
 exports.commentCount = (wid) => {
-    let _sql = `select count(*) from comments where wallId="${wid}"`
+    let _sql = `select count(*) as count from comments where wallId="${wid}"`
     return query(_sql)
 }
 
 //是否点赞
-exports.likeCount = (wid,uid) => {
-    let _sql = `select count(*) as count from feedbacks where wallId="${wid}" and userId="${uid};"`
+exports.likeCount = (wid, uid) => {
+    console.log(wid);
+    let _sql = `select count(*) as count from feedbacks where wallId="${wid}" and userId="${uid}"`
+    // 气死我了，这里分号打到引号里面去了，debug了好久！！！！！
     return query(_sql)
 }
 

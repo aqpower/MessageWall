@@ -8,8 +8,8 @@
         v-for="(e, index) in label[id]" :key="index">{{ e }}</p>
     </div>
     <div class="card" :style="{ width: nWidth + 'px' }" v-show="id == 0">
-      <node-card-vue v-for="(e, index) in note" :key="index" :note="e" class="card-inner" :width="'288px'"
-        :class="{ cardselected: index == cardSelected }" @click="selectCard(index)">
+      <node-card-vue v-for="(e, index) in cards" :key="index" :note="e" class="card-inner" :width="'288px'"
+        :class="{ cardselected: index == cardSelected }" @toDetail="selectCard(index)">
       </node-card-vue>
     </div>
     <div class="photo" v-show="id == 1">
@@ -52,6 +52,7 @@ import HhViewerVue from '@/components/HhViewer.vue'
 import { photo } from '../../mock/index'
 import lottie from 'lottie-web'
 import loading from '@/assets/images/loading.json'
+import { findWallPageApi } from '@/api/index'
 export default {
   data() {
     return {
@@ -60,7 +61,7 @@ export default {
       none,
       // id: 0,//留言墙与照片墙的切换id
       nlabel: -1, //当前对应的标签
-      note: '',
+      cards: [],
       photo: photo.data,
       photoArr: [],//图片列表
       nWidth: 0,//卡片模块宽度
@@ -70,6 +71,8 @@ export default {
       view: false,//预览大图
       cardSelected: -1, //当前选择卡片
       isOk: -1,// 是否加载中 -1加载状态
+      page: 1,
+      pagesize: 12,
     }
   },
   components: {
@@ -84,20 +87,18 @@ export default {
     id() {
       return this.$route.query.id;
     },
-    cards() {
-      let a = '';
-      if (this.$route.query.id == 0) {
-        a = this.note;
-      } else if (this.$route.query.id == 1) {
-        a = photo.data;
-      }
-      return a;
+    user() {
+      return this.$store.state.user;
     }
   },
   methods: {
     //切换label
     selectNode(e) {
       this.nlabel = e;
+      // 清空当前数据
+      this.cards = [];
+      this.page = 1;
+      this.getWallCard(this.id);
     },
     // note的宽度
     noteWidth() {
@@ -118,6 +119,12 @@ export default {
       } else {
         this.addBottom = 30;
       }
+
+      // 加载更多
+      if (parseInt(scrollTop) + clientHeight == scrollHeight) {
+        this.getWallCard(this.id);
+      }
+
     },
 
     //新增卡片
@@ -165,6 +172,8 @@ export default {
     // 前端插入卡片
     newCard(e) {
       console.log(e);
+      this.cards.unshift(e);
+      this.closeModal();
     },
     // lottie加载动画
     loading() {
@@ -181,6 +190,54 @@ export default {
         })
       }
     },
+
+
+    // 获取留言列表
+    getWallCard(id) {
+      if (this.page > 0) {
+        this.isOk = -1;
+        let data = {
+          type: id,
+          page: this.page,
+          pagesize: this.pagesize,
+          userId: this.user.id,
+          label: this.nlabel,
+        };
+        console.log(data);
+        findWallPageApi(data).then((res) => {
+          this.cards = this.cards.concat(res.message);
+          console.log(res.message)
+          if (res.message.length) {
+            this.page++;
+          } else {
+            this.page = 0;
+          }
+          if (this.cards.length > 0) {
+            this.isOk = 1;
+            if (this.page == 0) {
+              this.isOk = 2;
+            }
+          } else {
+            this.isOk = 0;
+          }
+
+          //如果为图片将图片单独拿出来
+          if (this.id == 1) {
+            for (let i = 0; i < this.cards.length; i++) {
+              this.photoArr.push(this.card[i].imgurl)
+            }
+          }
+        })
+      }
+    },
+    getUser() {
+      let timer = setInterval(() => {
+        if (this.user) {
+          this.getWallCard(this.id);
+          clearInterval(timer);
+        }
+      }, 10);
+    }
   },
   watch: {
     id() {
@@ -192,8 +249,8 @@ export default {
   },
   mounted() {
     this.noteWidth();
-    this.getPhoto();
     this.loading();
+    this.getUser();
     //监听屏幕宽度变化
     window.addEventListener('resize', this.noteWidth);
     //监听高度变化

@@ -1,21 +1,21 @@
 <template>
-  <div class="hh-node-card" :style="{ width: width, background: cardColor[card.imgurl] }">
+  <div class="hh-node-card" :style="{ width: width, background: cardColor[card.color] }">
     <div class="top">
       <p class="time">{{ dataOne(card.moment) }}</p>
       <p class="label">{{ label[card.type][card.label] }}</p>
     </div>
-    <div class="message">
+    <div class="message" @click="toDetail">
       {{ card.message }}
     </div>
     <div class="foot">
       <div class="foot-left">
         <div class="icon">
-          <span class="iconfont icon-aixin"></span>
-          <span class="value">{{ card.like }}</span>
+          <span class="iconfont icon-aixin" @click="clickLike()" :class="{ islike: card.islike[0].count > 0 }"></span>
+          <span class="value">{{ card.like[0].count }}</span>
         </div>
-        <div class="icon">
+        <div class="icon" v-if="card.comcount[0].count">
           <span class="iconfont icon-liuyan"></span>
-          <span class="value">{{ card.comment }}</span>
+          <span class="value">{{ card.comcount[0].count }}</span>
         </div>
       </div>
       <div class="name">
@@ -28,12 +28,14 @@
 <script>
 import { label, cardColor } from '../utils/data'
 import { dataOne } from '../utils/hhsg'
+import { insertFeedbackApi } from '@/api/index'
 export default {
   data() {
     return {
       label,
       cardColor,
       dataOne,
+      user: this.$store.state.user,
     }
   },
   props: {
@@ -51,6 +53,27 @@ export default {
   },
   created() {
     // console.log(this.card)
+  },
+  methods: {
+    toDetail() {
+      this.$emit('toDetail')
+    },
+    clickLike() {
+      if (this.card.islike[0].count == 0) {
+        let data = {
+          wallId: this.card.id,
+          userId: this.user.id,
+          type: 0,
+          moment: new Date(),
+        }
+        insertFeedbackApi(data).then(() => {
+          //反馈完成
+          this.card.like[0].count++;
+          this.card.islike[0].count++;
+        })
+      }
+    }
+
   }
 }
 </script>
@@ -119,6 +142,10 @@ export default {
         &:hover {
           color: @like-color;
         }
+      }
+
+      .islike {
+        color: @like-color;
       }
     }
 

@@ -32,7 +32,7 @@ exports.insertFeedback = async (req, res) => {
 //新建评论
 exports.insertComment = async (req, res) => {
     let data = req.body;
-    await dbModal.insertComment([data.wallId, data.userId, data.imgurl, data.moment, data.comment])
+    await dbModel.insertComment([data.wallId, data.userId, data.imgurl, data.moment, data.comment])
 }
 
 //删除墙，主表要对应多条主表一起删除
@@ -63,15 +63,21 @@ exports.findWallPage = async (req, res) => {
     await dbModel.findWallPage(data.page, data.pagesize, data.type, data.label)
         .then(async result => {
             for (let i = 0; i < result.length; i++) {
+                // 查找相应wall的赞、举报、撤销数据
+                // 喜欢
                 result[i].like = await dbModel.feedbackCount(result[i].id, 0);
+                // 举报
                 result[i].report = await dbModel.feedbackCount(result[i].id, 1);
+                // 要求撤销
                 result[i].revoke = await dbModel.feedbackCount(result[i].id, 2);
-                result[i].islike = await dbModel.likeCount(result[i].id, data, userId)
+                // 是否点赞
+                result[i].islike = await dbModel.likeCount(result[i].id, data.userId)
+                // 评论数
                 result[i].comcount = await dbModel.commentCount(result[i].id)
             }
             res.send({
                 code: 200,
-                message: result
+                message: result,
             })
         })
 }
