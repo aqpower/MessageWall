@@ -49,6 +49,6 @@ module.exports = function (app) {
         res.send({
             code: 200,
             ip: ip,
-        })
+        }) 
     })
 }

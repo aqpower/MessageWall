@@ -157,7 +157,7 @@ exports.findWallPage = (page, pagesize, type, label) => {
 
 //倒叙分页评论查询
 exports.findCommentPage = (page, pagesize, id) => {
-    let _sql = `select * from comments where wallId = "${id}" order by id desc limit ${(page - 1) * pagesize};`
+    let _sql = `select * from comments where wallId = "${id}" order by id desc limit ${(page - 1) * pagesize},${pagesize};`
     return query(_sql)
 }
 
@@ -175,7 +175,6 @@ exports.commentCount = (wid) => {
 
 //是否点赞
 exports.likeCount = (wid, uid) => {
-    console.log(wid);
     let _sql = `select count(*) as count from feedbacks where wallId="${wid}" and userId="${uid}"`
     // 气死我了，这里分号打到引号里面去了，debug了好久！！！！！
     return query(_sql)

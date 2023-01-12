@@ -7,7 +7,7 @@ var config = require('./config/dedault')
 const app = express()
 
 //获取静态路径
-app.use(express.static(__dirname + '/views'))
+app.use(express.static(__dirname + '/dist'))
 app.use(express.static(__dirname + '/data'))
 
 //设置允许跨域访问该服务
@@ -39,6 +39,7 @@ app.use(express.urlencoded({ extented: true }))
 
 //引入路由
 require('./routes/index')(app);
+require('./routes/files')(app);
 
 
 app.listen(config.port, () => {

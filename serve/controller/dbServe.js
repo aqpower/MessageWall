@@ -32,11 +32,18 @@ exports.insertFeedback = async (req, res) => {
 //新建评论
 exports.insertComment = async (req, res) => {
     let data = req.body;
-    await dbModel.insertComment([data.wallId, data.userId, data.imgurl, data.moment, data.comment])
+    console.log(data)
+    await dbModel.insertComment([data.wallId, data.userId, data.imgurl, data.moment, data.comment, data.name])
+        .then((result) => {
+            res.send({
+                code: 200,
+                message: result,
+            })
+        })
 }
 
 //删除墙，主表要对应多条主表一起删除
-exports.deleteWall = async (req, res) => {
+exports.deleteWall = async (req, res) => { 
     let data = req.body;
     await dbModel.deleteWall(data.id).then((result) => {
         res.send({

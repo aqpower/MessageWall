@@ -80,6 +80,11 @@ props;
   right: 0;
   z-index: 1000;
   backdrop-filter: blur(20px);
+  
+  @media screen and (orientation:portrait) and (max-device-width:600px) and (max-device-height:900px) {
+    top: 80px;
+    width: 100%;
+  }
 
   .hh-modal-head {
     display: flex;

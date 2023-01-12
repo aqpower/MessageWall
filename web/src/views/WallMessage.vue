@@ -13,7 +13,8 @@
       </node-card-vue>
     </div>
     <div class="photo" v-show="id == 1">
-      <photo-card-vue class="photo-card" :photo="e" v-for="(e, index) in photo" :key="index" @click="selectCard(index)">
+      <photo-card-vue class="photo-card" :photo="e" v-for="(e, index) in cards" :key="index"
+        @toDetail="selectCard(index)">
       </photo-card-vue>
     </div>
 
@@ -34,7 +35,8 @@
     </div>
     <hh-modal-vue :title="title" @close="closeModal" :isModal="modal">
       <new-card-vue :id="id" @addClose="closeModal" v-if="cardSelected == -1" @clickbt="newCard"></new-card-vue>
-      <card-detail-vue v-if="cardSelected != -1" :card="cards[cardSelected]"></card-detail-vue>
+      <card-detail-vue @deleteWall="refreshInterface" v-if="cardSelected != -1"
+        :card="cards[cardSelected]"></card-detail-vue>
     </hh-modal-vue>
     <hh-viewer-vue :isView="view" :photos="photoArr" :nowNumber="cardSelected" @viewSwitch="viewSwitch()">
     </hh-viewer-vue>
@@ -49,7 +51,7 @@ import NewCardVue from '@/components/NewCard.vue'
 import CardDetailVue from '@/components/CardDetail.vue'
 import PhotoCardVue from '@/components/PhotoCard.vue'
 import HhViewerVue from '@/components/HhViewer.vue'
-import { photo } from '../../mock/index'
+// import { photo } from '../../mock/index'
 import lottie from 'lottie-web'
 import loading from '@/assets/images/loading.json'
 import { findWallPageApi } from '@/api/index'
@@ -62,7 +64,7 @@ export default {
       // id: 0,//留言墙与照片墙的切换id
       nlabel: -1, //当前对应的标签
       cards: [],
-      photo: photo.data,
+      // photo: photo.data,
       photoArr: [],//图片列表
       nWidth: 0,//卡片模块宽度
       addBottom: 30,//add按钮距离底部高度
@@ -169,12 +171,18 @@ export default {
         this.cardSelected++;
       }
     },
+
     // 前端插入卡片
     newCard(e) {
       console.log(e);
-      this.cards.unshift(e);
-      this.closeModal();
+      if (this.id == 1) {
+        this.refreshInterface();
+      } else {
+        this.cards.unshift(e);
+        this.closeModal();
+      }
     },
+
     // lottie加载动画
     loading() {
       if (this.isOk == -1) {
@@ -203,7 +211,7 @@ export default {
           userId: this.user.id,
           label: this.nlabel,
         };
-        console.log(data);
+        // console.log(data);
         findWallPageApi(data).then((res) => {
           this.cards = this.cards.concat(res.message);
           console.log(res.message)
@@ -224,7 +232,7 @@ export default {
           //如果为图片将图片单独拿出来
           if (this.id == 1) {
             for (let i = 0; i < this.cards.length; i++) {
-              this.photoArr.push(this.card[i].imgurl)
+              this.photoArr.push(this.cards[i].imgurl)
             }
           }
         })
@@ -237,14 +245,21 @@ export default {
           clearInterval(timer);
         }
       }, 10);
-    }
-  },
-  watch: {
-    id() {
+    },
+    refreshInterface() {
       this.modal = false;
       this.view = false;
       this.cardSelected = -1;
       this.nlabel = -1;
+      this.page = 1;
+      this.cards = [];
+      this.photoArr = [];
+      this.getWallCard(this.id);
+    }
+  },
+  watch: {
+    id() {
+      this.refreshInterface();
     },
   },
   mounted() {
@@ -282,6 +297,16 @@ export default {
     display: flex;
     justify-content: center;
     margin-top: 40px;
+    height: 100%;
+
+    @media screen and (orientation:portrait) and (max-device-width:600px) and (max-device-height:900px) {
+      flex-direction: column;
+      .label-list{
+        height: 100% !important;
+        text-align: center;
+        justify-content: center;
+      }
+    }
 
     .label-list {
       padding: 0 14px;
@@ -309,6 +334,13 @@ export default {
     padding-top: 28px;
     margin: auto;
 
+    @media screen and (orientation:portrait) and (max-device-width:600px) and (max-device-height:900px) {
+      width: 100% !important;
+      .card-inner{
+        margin: 5px auto !important;
+      }
+    }
+
     .card-inner {
       margin: 6px;
     }
@@ -322,11 +354,16 @@ export default {
     padding-top: 28px;
     width: 88%;
     margin: 0 auto;
-    columns: 6;
+    columns: 4;
     column-gap: @padding-4;
 
+    @media screen and (orientation:portrait) and (max-device-width:600px) and (max-device-height:900px) {
+        columns: 1;
+        width: 77%;
+      }
+
     .photo-card {
-      width: 200px;
+      width: 299px;
       margin-bottom: @padding-4;
       break-inside: avoid;
     }
@@ -338,16 +375,17 @@ export default {
     // padding-top: 80px;
     position: absolute;
     top: 320px;
-
+    @media screen and (orientation:portrait) and (max-device-width:600px) and (max-device-height:900px) {
+        top: 45rem;
+      }
     img {
       display: inline;
     }
 
     p {
-      font-family: fa;
-      // font-weight: 600;
+      font-family: "LXGW WenKai Screen";
       font-size: 19px;
-      color: @gray-3;
+      color: @gray-2;
     }
   }
 
@@ -360,9 +398,9 @@ export default {
     }
 
     p {
-      font-family: fa;
+      font-family: "LXGW WenKai Screen";
       font-size: 19px;
-      color: @gray-3;
+      color: @gray-2;
     }
   }
 

@@ -1,7 +1,10 @@
 <template>
   <div class="wall-index">
-    <top-bar></top-bar>
-    <video src="@/assets/images/qm1.mp4" autoplay="autoplay" muted="nuted" loop="loop" class="bg-video"></video>
+    <top-bar @openBg="getBackground"></top-bar>
+    <div class="bgup"></div>
+    <img v-if="this.isShow == true"
+      :src="`https://jgox-image-1316409677.cos.ap-guangzhou.myqcloud.com/MessageWall-background/bg${this.bgRandom}.jpg`"
+      class="bg" id="bg" />
     <router-view></router-view>
     <foot-bar-vue></foot-bar-vue>
   </div>
@@ -16,7 +19,9 @@ import { signInApi } from '@/api/index'
 export default {
   data() {
     return {
+      bgRandom: Math.floor(Math.random() * 10),
       aaa: ' ',
+      isShow: false,
     }
   },
 
@@ -26,7 +31,6 @@ export default {
     FootBarVue,
   },
   computed: {
-
   },
   created() {
     this.getUser();
@@ -42,19 +46,52 @@ export default {
         }
         this.$store.commit('getUser', user)
       })
-    }
+    },
+
+
+    getBackground() {
+      if (this.isShow) {
+        let t = Math.floor(Math.random() * 10);
+        while (t == this.bgRandom) {
+          t = Math.floor(Math.random() * 10);
+        }
+        this.bgRandom = t;
+      } else {
+        this.isShow = true;
+      }
+    },
   }
 }
 </script>
 
 <style lang="less" scoped>
 .wall-index {
-  .bg-video {
-    height: 840px;
+  .bgup {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: -1;
+    background-color: white;
+    opacity: 0.6;
+
+  }
+
+  .bg {
+    transition: @tr;
+    width: 100%;
+    // height: 840px;
     position: fixed;
     top: 0;
     left: 0;
-    z-index: -1;
+    z-index: -2;
+    opacity: 1;
+
+    @media screen and (orientation:portrait) and (max-device-width:600px) and (max-device-height:900px) {
+      height: 100% !important;
+      width: auto;
+      left: -249px;
+    }
   }
 }
 </style>

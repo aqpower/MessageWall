@@ -3,7 +3,7 @@
     <div class="hh-viewer" v-if="isView">
       <div class="bg"></div>
       <div class="viewer-photo">
-        <img :src="require('../../static/' + photos[nowNumber] + '.jpg')" class="photo-img" />
+        <img :src="photos[nowNumber]" class="photo-img" />
       </div>
       <div class="switch sw-left" @click="changeNumber(0)" v-show="nowNumber > 0">
         <span class="iconfont icon-xiangzuo1"></span>
@@ -16,7 +16,13 @@
 </template>
 
 <script>
+import { baseUrl } from '@/utils/env';
 export default {
+  data(){
+    return {
+      baseUrl,
+    }
+  },
   props: {
     // 要切换就把整个数组传过去吧,右侧详情也需要改变
     photos: {

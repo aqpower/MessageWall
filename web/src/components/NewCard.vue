@@ -19,7 +19,7 @@
       </div>
     </div>
     <div class=" card-main" :style="{ background: id == 0 ? cardColor[colorSelected] : cardColor[5] }">
-      <textarea placeholder="留言..." class="message" maxlength="96" v-model="message"></textarea>
+      <textarea placeholder="留言..." class="message" maxlength="200" v-model="message"></textarea>
       <input type="text" placeholder="签名" class="name" v-model="name" />
     </div>
     <div class="labels">
@@ -58,7 +58,7 @@
 import { cardColor, cardColor1, label } from "@/utils/data";
 import HhButtonVue from "./HhButton.vue";
 import { getObjectURL } from '@/utils/hhsg';
-import { insertWallApi } from "@/api/index";
+import { insertWallApi, proFileApi } from "@/api/index";
 export default {
   data() {
     return {
@@ -96,8 +96,46 @@ export default {
 
     //图片显示
     showPhoto() {
+      // 可以选择多张图片，但只渲染第一张
       let aa = getObjectURL(document.getElementById("file").files[0]);
       this.url = aa;
+    },
+
+    // 图片提交
+    updatePhoto(data) {
+      let file = document.getElementById("file");
+      if (file.files.length > 0) {
+        let formData = new FormData();
+        formData.append('file', file.files[0]);
+
+        // 提交后端
+        proFileApi(formData).then((res) => {
+          console.log(res);
+          data.imgurl = res;
+          // 数据存数据库
+          insertWallApi(data).then((result) => {
+            let cardD = {
+              type: this.id,
+              message: this.message,
+              name: data.name,
+              userId: this.user.id,
+              moment: data.moment,
+              label: this.labelSelected,
+              color: this.colorSelected,
+              imgurl: data.imgurl,
+              id: result.message.insertId,
+              islike: [{ count: 0 }],
+              like: [{ count: 0 }],
+              comcount: [{ count: 0 }],
+              report: [{ count: 0 }],
+              revoke: [{ count: 0 }],
+            }
+            this.message = ' ';
+            this.$emit("clickbt", cardD);
+            this.$message({ type: "success", message: "感谢你的记录！" })
+          })
+        })
+      }
     },
 
     // 接口测试
@@ -160,6 +198,8 @@ export default {
           this.$emit("clickbt", cardD);
           this.$message({ type: "success", message: "感谢你的记录！" })
         })
+      } else if (this.id == 1 && this.url) {
+        this.updatePhoto(data);
       }
 
     }
@@ -267,7 +307,7 @@ export default {
       height: 172px;
       width: 100%;
       font-size: 15px;
-      font-family: fa;
+      font-family: "LXGW WenKai Screen";
     }
 
     .name {
@@ -278,7 +318,7 @@ export default {
       border: 1px #fff solid;
       line-height: 20px;
       font-size: 15px;
-      font-family: fa;
+      font-family: "LXGW WenKai Screen";
     }
   }
 

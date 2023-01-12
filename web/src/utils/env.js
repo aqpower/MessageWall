@@ -16,10 +16,10 @@ let baseImgPath = ' ';
 
 if (process.env.NODE_ENV == 'development') {
     baseUrl = 'http://localhost:3000';
-    baseImgPath = 'http://localhost:3000';
+    baseImgPath = 'http://localhost:3000/img/';
 } else {
-    baseUrl = 'https://aqpower:3009';
-    baseImgPath = 'https://aqpower:3009';
+    baseUrl = 'http://aqpower.cn:3009';
+    baseImgPath = 'http://aqpower.cn:3009/img/';
 }
 
 export {

@@ -1,8 +1,7 @@
 <template>
     <div class="top-bar">
         <div class="logo">
-            <img src="@/assets/images/logo.png" class="logo-img">
-            <p class="logo-name">火火の留言墙时光</p>
+            <p class="logo-name">JG🍊X</p>
         </div>
         <div class="menu">
             <hh-button-vue :nom="id == 0 ? 'cprimary' : 'csecondary'" class="menu-message" @click="changeWall(0)">留言墙
@@ -11,7 +10,10 @@
             </hh-button-vue>
         </div>
         <div class="user">
-            <div class="user-head"></div>
+            <!-- <div class="user-head"></div> -->
+            <img src="https://jgox-image-1316409677.cos.ap-guangzhou.myqcloud.com/MessageWall-background/avatar.png"
+                class="user-head">
+            <p class="bg-btn" @click.capture="this.$emit('openBg')">✨</p>
         </div>
     </div>
 </template>
@@ -21,7 +23,6 @@ import HhButtonVue from './HhButton.vue'
 export default {
     data() {
         return {
-
         }
     },
     components: {
@@ -38,7 +39,8 @@ export default {
             this.$router.push({
                 query: { id: e },
             })
-        }
+        },
+
     }
 }
 </script>
@@ -60,13 +62,17 @@ export default {
     padding: 0 30px;
     box-sizing: border-box;
 
+    @media screen and (orientation:portrait) and (max-device-width:600px) and (max-device-height:900px) {
+        height: 80px;
+    }
+
     .logo {
         display: flex;
         align-items: center;
         width: 220px;
 
         .logo-name {
-            font-size: 20px;
+            font-size: 24px;
             color: @gray-1;
             font-weight: 600;
             padding-left: 10px;
@@ -74,6 +80,10 @@ export default {
 
         .logo-img {
             height: 36px;
+        }
+
+        img {
+            height: 100%;
         }
     }
 
@@ -85,6 +95,15 @@ export default {
 
     .user {
         width: 200px;
+
+        .bg-btn {
+            float: right;
+            font-size: 26px;
+            color: @gray-1;
+            font-weight: 600;
+            padding-right: 10px;
+            cursor: pointer;
+        }
 
         .user-head {
             float: right;

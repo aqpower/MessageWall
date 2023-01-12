@@ -4,7 +4,7 @@ const config = {
     database:{
         HOST:'localhost',
         USER:'root',
-        PASSWORD:'XJGO314159',
+        PASSWORD:'JGOX314159',
         WALL:'WALLTS',
     },
 }

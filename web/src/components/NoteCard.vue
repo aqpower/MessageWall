@@ -58,7 +58,7 @@ export default {
     toDetail() {
       this.$emit('toDetail')
     },
-    clickLike() {
+    clickLike() {    
       if (this.card.islike[0].count == 0) {
         let data = {
           wallId: this.card.id,
@@ -84,6 +84,8 @@ export default {
   padding: 10px 20px;
   box-sizing: border-box;
   position: relative;
+  
+  
 
   .top {
     display: flex;
@@ -98,7 +100,7 @@ export default {
 
   .message {
     height: 140px;
-    font-family: fa;
+    font-family: "LXGW WenKai Screen";
     font-size: 15px;
     color: @gray-1;
     cursor: pointer;
@@ -118,6 +120,8 @@ export default {
       display: flex;
 
       .value {
+        font-family: "LXGW WenKai Screen";
+        font-weight: 600;
         font-size: @size-12;
         color: @gray-2;
         line-height: 16px;
@@ -150,10 +154,9 @@ export default {
     }
 
     .name {
-      font-family: fa;
+      font-family: "LXGW WenKai Screen";
       font-size: 17px;
       color: @gray-1;
-      font-weight: 500;
     }
   }
 }
