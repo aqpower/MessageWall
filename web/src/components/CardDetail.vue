@@ -3,7 +3,7 @@
     <div class="top-bt">
       <p class="revoke" @click="deleteWall">联系博主撕掉该便签</p>
       <p class="report">举报</p>
-      <p class="isme" @click="Master">IsMe</p>
+      <!-- <p class="isme" @click="Master">IsMe</p> -->
     </div>
     <note-card-vue :note="card"></note-card-vue>
     <div class="form">
